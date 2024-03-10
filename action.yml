@@ -1,0 +1,13 @@
+name: 'build-paper'
+description: 'Build a Jupyter ipynb file into a PDF and a GitHub Page'
+inputs:
+    filename:
+        description: 'Name of the ipynb file to build'
+        required: true
+        default: 'paper.ipynb'
+outputs:
+    time:
+        description: 'The time it took to build'
+runs:
+    using: 'node20'
+    main: 'index.js'

@@ -1,0 +1,21 @@
+{
+    "name": "build-paper",
+    "version": "1.0.0",
+    "description": "GitHub action to build a ipynb into a PDF and a static GitHub page",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [
+        "Jupyter",
+        "Paper",
+        "GitHub Actions",
+        "PDF"
+    ],
+    "author": "Ronald Landheer-Cieslak <rlc@vlinder.ca>",
+    "license": "MIT",
+    "dependencies": {
+        "@actions/core": "^1.10.1",
+        "@actions/github": "^6.0.0"
+    }
+}
