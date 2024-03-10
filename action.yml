@@ -5,9 +5,42 @@ inputs:
         description: 'Name of the ipynb file to build'
         required: true
         default: 'paper.ipynb'
-outputs:
-    time:
-        description: 'The time it took to build'
+    requirements-txt:
+        description: 'Requirements file to use to import the dependencies of the paper'
+        required: true
+        default: 'requirements.txt'
+#outputs:
+#    time:
+#        description: 'The time it took to build'
 runs:
-    using: 'node20'
-    main: 'dist/index.js'
+    using: 'composite'
+    steps:
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'    
+    - uses: pandoc/actions/setup@main
+      with:
+        version: 2.19
+    - name: Install TeX Live
+      uses: zauguin/install-texlive@v2
+      with:
+        packages: >
+          latex latex-bin xetex tcolorbox pgf tools environ etoolbox pdfcol ltxcmds infwarerr iftex parskip caption
+          float xcolor geometry amsmath upquote eurosym ucs fontspec unicode-math fancyvrb grffile adjustbox hyperref
+          titling booktabs enumitem ulem soul kvoptions amsfonts metafont jknapltx
+    - name: install missing fonts for PDF generation
+      run: tlmgr install collection-fontsrecommended
+      shell: bash
+    - name: build the paper
+      shell: bash
+      run: |
+        python3 -m venv .venv
+        . .venv/bin/activate
+        pip install -U pip
+        pip install -Ur ${{input.requirements-txt}}
+        jupyter nbconvert --ClearOutputPreprocessor.enabled=True --inplace ${{input.filename}}
+        jupyter nbconvert --execute --to notebook --inplace ${{input.filename}}
+        jupyter nbconvert ${{input.filename}} --TagRemovePreprocessor.remove_cell_tags='html_only' --TagRemovePreprocessor.remove_cell_tags='no_latex' --TagRemovePreprocessor.remove_input_tags='latex_only' --to pdf --template ./templates/latex --output-dir _site --output index
+        jupyter nbconvert ${{input.filename}} --TagRemovePreprocessor.remove_input_tags='html_only' --TagRemovePreprocessor.remove_cell_tags='latex_only' --TagRemovePreprocessor.remove_cell_tags='no_html' --to html --template classic --output-dir _site --output index
+        ghp-import -n -p -f _site
+        jupyter nbconvert --ClearOutputPreprocessor.enabled=True --inplace ${{input.filename}}
