@@ -24,7 +24,7 @@ inputs:
     attachments:
         description: 'Files to include in GH page and artifact'
         required: true
-        default: [] 
+        default: ''
 
 #outputs:
 #    time:
@@ -62,6 +62,7 @@ runs:
         jupyter nbconvert ${{inputs.filename}} --TagRemovePreprocessor.remove_input_tags='html_only' --TagRemovePreprocessor.remove_cell_tags='latex_only' --TagRemovePreprocessor.remove_cell_tags='no_html' --to html --template classic --output-dir _site --output index
         jupyter nbconvert --ClearOutputPreprocessor.enabled=True --inplace ${{inputs.filename}}
     - name: Copy attachments
+      if: ${{ inputs.attachments != '' }} 
       shell: bash
       run: |
         for f in ${{ inputs.attachements }}; do
