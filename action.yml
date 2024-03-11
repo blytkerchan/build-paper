@@ -37,10 +37,10 @@ runs:
         python3 -m venv .venv
         . .venv/bin/activate
         pip install -U pip
-        pip install -Ur ${{input.requirements-txt}}
-        jupyter nbconvert --ClearOutputPreprocessor.enabled=True --inplace ${{input.filename}}
-        jupyter nbconvert --execute --to notebook --inplace ${{input.filename}}
-        jupyter nbconvert ${{input.filename}} --TagRemovePreprocessor.remove_cell_tags='html_only' --TagRemovePreprocessor.remove_cell_tags='no_latex' --TagRemovePreprocessor.remove_input_tags='latex_only' --to pdf --template ./templates/latex --output-dir _site --output index
-        jupyter nbconvert ${{input.filename}} --TagRemovePreprocessor.remove_input_tags='html_only' --TagRemovePreprocessor.remove_cell_tags='latex_only' --TagRemovePreprocessor.remove_cell_tags='no_html' --to html --template classic --output-dir _site --output index
+        pip install -Ur ${{inputs.requirements-txt}}
+        jupyter nbconvert --ClearOutputPreprocessor.enabled=True --inplace ${{inputs.filename}}
+        jupyter nbconvert --execute --to notebook --inplace ${{inputs.filename}}
+        jupyter nbconvert ${{inputs.filename}} --TagRemovePreprocessor.remove_cell_tags='html_only' --TagRemovePreprocessor.remove_cell_tags='no_latex' --TagRemovePreprocessor.remove_input_tags='latex_only' --to pdf --template ./templates/latex --output-dir _site --output index
+        jupyter nbconvert ${{inputs.filename}} --TagRemovePreprocessor.remove_input_tags='html_only' --TagRemovePreprocessor.remove_cell_tags='latex_only' --TagRemovePreprocessor.remove_cell_tags='no_html' --to html --template classic --output-dir _site --output index
         ghp-import -n -p -f _site
         jupyter nbconvert --ClearOutputPreprocessor.enabled=True --inplace ${{input.filename}}
