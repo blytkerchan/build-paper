@@ -13,18 +13,27 @@ inputs:
         description: 'Whether or not to publish the result to GH Pages, overwriting what may be there'
         required: true
         default: false
+    python-version:
+        description: 'Version of Python to use'
+        required: true
+        default: '3.10'
+     pandoc-version:
+        description: 'Version of Python to use'
+        required: true
+        default: '2.19'
+
 #outputs:
 #    time:
 #        description: 'The time it took to build'
 runs:
     using: 'composite'
     steps:
-    - uses: actions/setup-python@v4
+    - uses: actions/setup-python@v5
       with:
-        python-version: '3.10'    
+        python-version: ${{ inputs.python-version }}
     - uses: pandoc/actions/setup@main
       with:
-        version: 2.19
+        version: ${{ inputs.pandoc-version }}
     - name: Install TeX Live
       uses: zauguin/install-texlive@v2
       with:
