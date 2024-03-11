@@ -9,6 +9,10 @@ inputs:
         description: 'Requirements file to use to import the dependencies of the paper'
         required: true
         default: 'requirements.txt'
+    publish-ghpages:
+        description: 'Whether or not to publish the result to GH Pages, overwriting what may be there'
+        required: true
+        default: false
 #outputs:
 #    time:
 #        description: 'The time it took to build'
@@ -42,5 +46,16 @@ runs:
         jupyter nbconvert --execute --to notebook --inplace ${{inputs.filename}}
         jupyter nbconvert ${{inputs.filename}} --TagRemovePreprocessor.remove_cell_tags='html_only' --TagRemovePreprocessor.remove_cell_tags='no_latex' --TagRemovePreprocessor.remove_input_tags='latex_only' --to pdf --template ./templates/latex --output-dir _site --output index
         jupyter nbconvert ${{inputs.filename}} --TagRemovePreprocessor.remove_input_tags='html_only' --TagRemovePreprocessor.remove_cell_tags='latex_only' --TagRemovePreprocessor.remove_cell_tags='no_html' --to html --template classic --output-dir _site --output index
-        ghp-import -n -p -f _site
         jupyter nbconvert --ClearOutputPreprocessor.enabled=True --inplace ${{inputs.filename}}
+    - name: Publish to GH Pages
+      if: ${{ inputs.publish-ghpages }}
+      shell: bash
+      run: |
+        ghp-import -n -p -f _site
+    - name: publish artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: paper
+        path: _site
+ 
+       
