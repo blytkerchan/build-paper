@@ -17,7 +17,7 @@ inputs:
         description: 'Version of Python to use'
         required: true
         default: '3.10'
-     pandoc-version:
+    pandoc-version:
         description: 'Version of Python to use'
         required: true
         default: '2.19'
