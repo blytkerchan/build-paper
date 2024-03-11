@@ -65,7 +65,7 @@ runs:
       if: ${{ inputs.attachments != '' }} 
       shell: bash
       run: |
-        for f in ${{ inputs.attachements }}; do
+        for f in ${{ inputs.attachments }}; do
           cp ${f} _site
         done  
     - name: Publish to GH Pages
