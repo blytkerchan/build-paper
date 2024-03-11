@@ -52,6 +52,7 @@ runs:
       if: ${{ inputs.publish-ghpages }}
       shell: bash
       run: |
+        . .venv/bin/activate
         ghp-import -n -p -f _site
     - name: publish artifacts
       uses: actions/upload-artifact@v4
