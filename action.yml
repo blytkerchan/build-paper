@@ -9,6 +9,22 @@ inputs:
         description: 'Requirements file to use to import the dependencies of the paper'
         required: true
         default: 'requirements.txt'
+    publish-ghpages:
+        description: 'Whether or not to publish the result to GH Pages, overwriting what may be there'
+        required: true
+        default: false
+    python-version:
+        description: 'Version of Python to use'
+        required: true
+        default: '3.10'
+    pandoc-version:
+        description: 'Version of Python to use'
+        required: true
+        default: '2.19'
+    attachments:
+        description: 'Files to include in GH page and artifact'
+        required: true
+        default: ''
     build-pdf:
         description: 'Flag to determine whether to build the PDF'
         required: true
@@ -16,12 +32,12 @@ inputs:
 runs:
     using: 'composite'
     steps:
-        - uses: actions/setup-python@v4
+        - uses: actions/setup-python@v5
           with:
-            python-version: '3.10'    
+            python-version: ${{ inputs.python-version }}
         - uses: pandoc/actions/setup@main
           with:
-            version: 2.19
+            version: ${{ inputs.pandoc-version }}
         - name: Install TeX Live
           if: ${{ inputs.build-pdf }}
           uses: zauguin/install-texlive@v2
@@ -61,9 +77,21 @@ runs:
             jupyter nbconvert --execute --to notebook --inplace ${{inputs.filename}}
             jupyter nbconvert ${{inputs.filename}} --TagRemovePreprocessor.remove_input_tags='html_only' --TagRemovePreprocessor.remove_cell_tags='latex_only' --TagRemovePreprocessor.remove_cell_tags='no_html' --to html --template classic --output-dir _site --output index
             jupyter nbconvert --ClearOutputPreprocessor.enabled=True --inplace ${{inputs.filename}}
-        - name: publish the paper to GH pages
+        - name: Copy attachments
+          if: ${{ inputs.attachments != '' }} 
           shell: bash
           run: |
-            python3 -m venv .venv
+            for f in ${{ inputs.attachments }}; do
+            cp ${f} _site
+            done  
+        - name: Publish to GH Pages
+          if: ${{ inputs.publish-ghpages }}
+          shell: bash
+          run: |
             . .venv/bin/activate
             ghp-import -n -p -f _site
+        - name: publish artifacts
+          uses: actions/upload-artifact@v4
+          with:
+            name: paper
+            path: _site
